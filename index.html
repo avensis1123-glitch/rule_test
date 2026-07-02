@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ラスベガス方式 ルール説明 〜カスタムver.〜</title>
+<style>
+  /* ベース設定 */
+  body {
+    font-family: "BIZ UDPGothic", "BIZ UDPゴシック", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    color: #111;
+    margin: 0;
+    padding: 0;
+    background-color: #555; 
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility; 
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* スマホ向けコンテナ */
+  .mobile-container {
+    width: 100%;
+    max-width: 600px;
+    min-height: 100vh; 
+    padding: 15px;
+    box-sizing: border-box;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    background-color: #f8fafc;
+    background-image: 
+      radial-gradient(circle at 0% 0%, transparent 150px, rgba(186, 230, 253, 0.6) 151px, rgba(186, 230, 253, 0.6) 200px, transparent 201px),
+      radial-gradient(circle at 100% 100%, transparent 200px, rgba(221, 214, 254, 0.6) 201px, rgba(221, 214, 254, 0.6) 250px, transparent 251px),
+      radial-gradient(circle at 20% 80%, transparent 80px, rgba(191, 219, 254, 0.5) 81px, rgba(191, 219, 254, 0.5) 120px, transparent 121px),
+      radial-gradient(circle at 80% 20%, transparent 100px, rgba(233, 213, 255, 0.5) 101px, rgba(233, 213, 255, 0.5) 140px, transparent 141px),
+      radial-gradient(ellipse at 10% 10%, #e0f2fe 0%, transparent 60%),
+      radial-gradient(ellipse at 90% 90%, #ede9fe 0%, transparent 60%);
+      
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  /* 印刷用設定 */
+  @media print {
+    body { background-color: #fff; }
+    .mobile-container { 
+      width: 100%; 
+      box-shadow: none; 
+      padding: 10px;
+    } 
+  }
+  
+  *, *::before, *::after { box-sizing: border-box; }
+  
+  /* ヘッダー */
+  .header-title {
+    text-align: center;
+    color: #e60000;
+    font-weight: 900;
+    text-shadow: 1.5px 1.5px 0 #fff, -1.5px -1.5px 0 #fff, 1.5px -1.5px 0 #fff, -1.5px 1.5px 0 #fff, 3px 3px 0px #000;
+    margin: 0;
+    line-height: 1.25;
+  }
+  .header-title .main { font-size: 1.8rem; letter-spacing: 1px; }
+  .header-title .sub { font-size: 1.1rem; color: #4338ca; text-shadow: 1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;}
+  
+  /* ヒーロー画像 */
+  .hero-image { text-align: center; margin: 0; }
+  .hero-image img {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    border: 2px solid #fff;
+    border-radius: 6px;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.8);
+    object-fit: cover;
+  }
+  
+  /* セクション共通 */
+  .section {
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 2px solid #333;
+    border-radius: 6px;
+    padding: 10px;
+    box-shadow: 2px 2px 0 #333;
+  }
+  
+  h2 {
+    font-size: 1rem;
+    color: #fff;
+    background-color: #e60000;
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 10px;
+    border: 1.5px solid #333;
+    margin-top: 0;
+    margin-bottom: 8px;
+  }
+  .h2-blue { background-color: #0284c7; }
+  .h2-purple { background-color: #7c3aed; }
+  .h2-green { background-color: #16a34a; }
+  .h2-orange { background-color: #ea580c; }
+  
+  p, li { font-size: 0.95rem; line-height: 1.5; margin: 6px 0; }
+  
+  /* 情報テーブル */
+  .info-table { width: 100%; border-collapse: collapse; margin-bottom: 0; }
+  .info-table th {
+    width: 35%;
+    background-color: #bae6fd;
+    border: 1.5px solid #333;
+    padding: 6px 4px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.85rem;
+  }
+  .info-table td {
+    width: 65%;
+    border: 1.5px solid #333;
+    padding: 6px 8px;
+    background-color: #fff;
+    font-weight: bold;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  /* 上限目立たせ用CSS追加 */
+  .limit-normal {
+    color: #666;
+    font-size: 0.85rem;
+  }
+  .limit-burst {
+    color: #e60000;
+    font-weight: 900;
+    font-size: 1.1rem;
+    background: linear-gradient(transparent 50%, #fef08a 50%);
+    display: inline-block;
+    margin-top: 4px;
+  }
+
+  .team-highlight {
+    font-size: 1rem;
+    font-weight: bold;
+    background: linear-gradient(transparent 50%, #fef08a 50%);
+    display: inline-block;
+    margin: 6px 0;
+  }
+  
+  .rule-box {
+    background-color: #fef9c3;
+    border-left: 4px solid #e60000;
+    padding: 8px;
+    margin: 8px 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+  }
+
+  /* スコアテーブル */
+  .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 8px;
+  }
+  .score-table {
+    width: 100%;
+    min-width: 450px;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+  .score-table th { background-color: #333; color: #fff; padding: 6px 4px; border: 1.5px solid #333; }
+  .score-table td { padding: 6px 4px; border: 1.5px solid #333; background-color: #fff; vertical-align: middle; }
+  .bg-team-x { background-color: #e0f2fe !important; color: #000 !important; }
+  .bg-team-y { background-color: #fee2e2 !important; color: #000 !important; }
+  
+  .flex-row { display: flex; flex-direction: column; gap: 15px; }
+  .flex-col { flex: 1; }
+
+  /* フッターエリア */
+  .footer-area { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+  .rate-box {
+    width: 100%;
+    text-align: center;
+    background-color: #111827;
+    color: #fff;
+    padding: 12px;
+    border-radius: 6px;
+    border: 2px solid #fff;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1.5;
+  }
+  .rate-box span { display: block; }
+  .rate-box span:first-child { font-size: 1.2rem; font-weight: bold; margin-bottom: 4px; color: #FFD700; }
+  .rate-box span:nth-child(2) { font-size: 0.95rem; font-weight: bold; }
+  
+  /* フッター上限目立たせ用CSS追加 */
+  .rate-alert-burst {
+    color: #e60000 !important;
+    background-color: #fef9c3;
+    border: 2.5px dashed #e60000;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 0.95rem !important;
+    font-weight: 900 !important;
+    margin-top: 10px;
+    text-shadow: none;
+    box-shadow: 2px 2px 0px rgba(230,0,0,0.3);
+  }
+  .rate-alert-burst strong {
+    font-size: 1.2rem;
+    text-decoration: underline;
+  }
+
+  .qr-space {
+    width: 160px;
+    background-color: #fff;
+    border: 2px solid #333;
+    border-radius: 6px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 2px 2px 0 #333;
+  }
+  .qr-text { font-size: 0.85rem; font-weight: bold; text-align: center; color: #111; margin-bottom: 4px; }
+  .qr-img { width: 100px; height: 100px; object-fit: contain; }
+
+  @media (min-width: 600px) {
+    .flex-row { flex-direction: row; }
+    .footer-area { flex-direction: row; align-items: stretch; justify-content: space-between; }
+    .rate-box { width: auto; flex: 1; margin-right: 15px; }
+    .qr-space { width: 120px; }
+    .qr-img { width: 80px; height: 80px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="mobile-container">
+
+  <div class="header-title">
+    <div class="main">ラスベガス方式 ルール説明</div>
+    <div class="sub">〜カスタムver.〜</div>
+  </div>
+
+  <div class="hero-image">
+    <img src="EdY3oqjUcAASCUW.jpg" alt="Dragon Ball Golf">
+  </div>
+
+  <div class="flex-row">
+    <div class="section flex-col">
+      <h2 class="h2-blue">カスタム</h2>
+      <table class="info-table">
+        <tr><th>基本チップ(t)</th><td>(申告スコア − 全員平均) × 係数</td></tr>
+        <tr><th>トップ補正</th><td>t × (2 − トップ申告 ÷ 全員平均)</td></tr>
+        <tr>
+          <th>点差上限</th>
+          <td>
+            <span class="limit-normal">通常時: 20</span><br>
+            <span class="limit-burst">🔥 バーディ以下時: 50 🔥</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="section flex-col" style="border-color: #4338ca; box-shadow: 2px 2px 0 #4338ca; text-align: center;">
+      <h2 class="h2-purple">チーム分け</h2>
+      <p style="margin-bottom: 4px;">各ホールの<strong style="color:#e60000;">打順</strong>でチームを決定！</p>
+      <div class="team-highlight">1番・4番 チーム 🆚 2番・3番 チーム</div>
+      <p style="color:#e60000; font-weight: bold; text-decoration: underline; font-size: 0.8rem; margin-top: 6px;">※打順はスコア順。毎ホール組む相手が変わる可能性あり！</p>
+    </div>
+  </div>
+
+  <div class="section" style="border-color: #ea580c;">
+    <h2 class="h2-orange">独自の初期ハンデ算出システム</h2>
+    <p>全員が公平に楽しめるよう、ゲーム開始時の持ち点を以下のステップで調整します。</p>
+    <ol style="margin: 0; padding-left: 20px;">
+      <li><strong>基本チップ算出：</strong> 全員の実力差をフラットにするベースラインを計算します。係数は5 or 6とし、実力差が大きいときは6を選択します。</li>
+      <li><strong>トップへの特別補正：</strong> 最も申告スコアが良い1名に対し、独自計算で特別補正をかけます。この補正分を、2番手・3番手への分配にあてます。</li>
+      <li><strong>申告2・3位への分配：</strong> 申告１位と対戦する機会が多くなる2位・3位のバランスをとるため、ステップ2の補正分を「2位: 70%、3位: 30%」の割合でハンデとして加算します。１位が複数人いる場合はステップ２は行いません。</li>
+      <li><strong>ポイント総計の調整：</strong> 全員の初期ポイント合計が必ず「±0」になるよう、全体のバランスを見て１位のハンデを最終調整し、全員が完全に公平な状態でスタートできるようにします。</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>基本ルール（ラスベガス方式）</h2>
+    <p>2人の打数を組み合わせて「チーム得点」を作り、得点の小さいチームが勝利！</p>
+    <div class="rule-box">
+      <strong>【得点の作り方】</strong><br>2人のスコアを並べ、<strong>スコアの小さいほうが10の位、大きい方が1の位</strong>。<br>
+      <em>例：Aさんが「5」、Bさんが「7」の場合 ⇒ チーム得点は「57」</em>
+    </div>
+    <p><strong>【勝敗とポイント】</strong> 勝利チームは<strong>「両チームの得点差分」</strong>だけポイントを獲得し、敗北チームは同ポイントを失います。</p>
+  </div>
+
+  <div class="flex-row">
+    <div class="section flex-col" style="border-color: #0284c7;">
+      <h2 style="background-color: #0284c7;">💥 特殊: バーディー逆転</h2>
+      <p>誰かがバーディーを獲ると、<strong>相手チームのスコアが逆転</strong>します！</p>
+      <p style="font-size: 0.85rem; color: #444;">※通常は小さい数字が10の位ですが、逆転時は<strong>大きい数字が10の位</strong>になり大ダメージ！<em>（例:「36」が「63」に）</em></p>
+    </div>
+    <div class="section flex-col" style="border-color: #16a34a;">
+      <h2 style="background-color: #16a34a;">💥 特殊: キャリー（持越）</h2>
+      <p>あるホールでチーム得点が<strong>同点</strong>だったときは、<strong>次のホールの得点が2倍</strong>になります。</p>
+      <p style="font-size: 0.85rem; color: #444;">※2ホール連続で同点だったときは、次のホールの得点が<strong>3倍</strong>になります。</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 style="background-color: #333;">スコア計算例</h2>
+    <div class="table-wrapper">
+      <table class="score-table">
+        <tr>
+          <th rowspan="2" style="width: 15%;">状況</th>
+          <th colspan="2" class="bg-team-x">チームX (1・4番)</th>
+          <th colspan="2" class="bg-team-y">チームY (2・3番)</th>
+          <th colspan="2">チーム得点</th>
+          <th rowspan="2" style="width: 25%;">結果</th>
+        </tr>
+        <tr>
+          <th class="bg-team-x">1番</th><th class="bg-team-x">4番</th>
+          <th class="bg-team-y">2番</th><th class="bg-team-y">3番</th>
+          <th>チームX</th><th>チームY</th>
+        </tr>
+        <tr>
+          <td><strong>通常時</strong></td>
+          <td>5</td><td>7</td><td>4</td><td>6</td>
+          <td>57</td><td><strong>46</strong></td>
+          <td>チームY勝利！<br>57 - 46 = <strong>+11 P</strong></td>
+        </tr>
+        <tr>
+          <td><strong>3番の人が<br><span style="color:red;">バーディー!</span></strong></td>
+          <td>5</td><td>7</td><td>6</td><td><span style="color:red;font-weight:bold;">3</span></td>
+          <td style="color:red;font-weight:bold;">75<br><span style="font-size:0.75rem;">(相手逆転!)</span></td>
+          <td><strong>36</strong></td>
+          <td>チームY勝利！<br><span style="font-size:0.75rem;">75-36=39</span><br>上限50P枠内で <strong>+39 P</strong></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer-area">
+    <div class="rate-box">
+      <span>💰 1ポイント ＝ 50円 💰</span>
+      <span>1ホールの最大点差は <span style="color: #bbb;">通常20ポイント</span> まで！</span>
+      <span class="rate-alert-burst">🚨 バーディー以下のスコアが出た場合、上限が <strong>50ポイント</strong> に跳ね上がります！ 🚨</span>
+    </div>
+    
+    <div class="qr-space">
+      <div class="qr-text">スコア入力用<br>WEBアプリ</div>
+      <img src="image_1555e8.png" alt="QRコード" class="qr-img">
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
